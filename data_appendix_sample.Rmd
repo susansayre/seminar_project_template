@@ -1,0 +1,336 @@
+---
+title: "Data Appendix to \"The Impact of Visibility on National Park Visitation\""
+author: "Susan Sayre (based on work completed by Simren Nagath '19)"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+---
+
+```{r setup, echo = F, message = F}
+knitr::opts_chunk$set(results = 'asis', cache = F)
+library(tidyverse)
+library(lubridate)
+library(summarytools)
+st_options(plain.ascii = F,
+           style = "rmarkdown",
+           footnote = NA,
+           subtitle.emphasis = F,
+           dfSummary.silent = T,
+           dfSummary.valid.col = F,
+           tmp.img.dir = "./tmp",
+           dfSummary.style = "grid")
+
+#The following custom function simplifies the process of writing dfSummaries to html files
+export_summary_table <- function(dfSummary_output){
+  data_info <- attr(dfSummary_output, "data_info")
+  ds_name <- data_info$Data.frame
+  print(dfSummary_output,
+      file = str_c("output/", ds_name, "_summary.html"),
+      method = "browser",
+      report.title = ds_name)
+}
+```
+
+```{r set dfSummary css style, echo = F, include = F}
+st_css()
+```
+# Appendix description
+*Your Data Appendix should begin with a brief statement explaining its purpose like the following one.*
+
+This Data Appendix documents the data used in the sample project "The Impact of Visibility on National Park Visitation". It was prepared in a Rmarkdown document that contains both the documentation and the R code used to prepare the data used in the final estimation. It also includes descriptive statistics for both the original data and the final dataset, with a discussion of any issues of note.
+
+The datasets used directly by the final analysis are saved as .csv files in `processed_data/` at the end of this file.
+
+*Note: this document structure will require you to re-run steps of your analysis multiple times. If your code takes a long time, please come talk with me about strategies to reduce run time or save earlier results.*
+
+# Instructions for Use
+This document includes both instructions for how to create your Data Appendix and a sample Data Appendix for the sample project. Outside of this section, instruction paragraphs are listed in *italics* (like the first paragraph above). Instructions should be removed before submission.
+
+To start creating your own data appendix, follow these steps: 
+
+1. Create a copy of this file with the filename data_appendix.Rmd. (Leave the original data_appendix_sample.Rmd file in your repository. That way the unaltered version will still be available if you want to refer back to part of the file that you've deleted or use sections as a template.)
+2. Replace the title and author in the section at the top of the file (called the YAML).
+3. Go to the Git tab in the upper right of your RStudio screen and check the box next to your MetadataGuide.Rmd file to add it to the repository.
+4. Commit your changes with a message like "Creating data appendix".
+
+Before you submit the Data Appendix 1 assignment, you should also:
+
+1. Delete this instruction section of the document.
+1. Remove any other instructions in italics and examples from the document.
+
+Remember that you will submit your assignment by committing and then pushing your versions to your repository. I encourage you to commit your changes often as you work, but there are three specific points at which you need to both submit and push changes, corresponding to course deadlines:
+
+1. You must submit a version with the original data section completed by the Data Appendix 1 deadline.  
+2. You must submit a version with all parts completed by the Data Appendix 2 deadline.  
+3. You must submit a final version of this document that is consistent with your final paper by the final project deadline.  
+
+While creating your data appendix, refer regularly to the assignment descriptions posted on Moodle and hosted in the eco324_materials repo.
+
+A few tips:
+
+- When creating a list like this one, be sure to put an empty line above the list. You also need to end each line with two spaces. If you don't do this, your entries won't be formatted a list.
+- Make sure you have empty lines above and below section and subsection headings.  
+- When creating numbered lists, you can number all items in your list with 1. Rmarkdown will number them sequentially when it creates your final document.
+
+# Raw data
+*Each dataset you use will have its own documentation section. The next subsection in this document (Dataset description) is a template. You can copy this section and paste it into your document each time you need to add a section for a new dataset.* 
+This section documents the datasets used in this analysis.
+
+## Dataset description
+**Citation:** Put citation here in APA or other consistent format that you will use throughout the project. Include a hyperlink if applicable.
+**DOI:** If the dataset has a documention identified (DOI) assigned put it here.
+**Date Downloaded:** Identify when you downloaded the dataset.
+**Filename(s):** raw_data/filename.csv *If you have a large number of files you can use a patten (see visit data below)*
+**Unit of observation:** What distinguishes different rows in your dataset
+**Dates covered:** What time frame does the data cover?
+
+### To obtain a copy
+
+Describe in a step-by-step fashion how an interested user could obtain the data.
+
+### Importable version (if necessary)
+
+**Filename(s):** importable_data/filename_importable.csv
+
+In some cases the raw data is not directly importable. In this case, you should fully document every step you took to create the importable data in a subsection like this one. 
+
+### Variable descriptions
+
+Create a bullet list with the name of each variable in the dataset followed by any information the user would need to understand it.
+
+- **variable_name:** Variable description. 
+- **variable_name2:** Description of second variable.
+
+### Data import code and summary
+
+*Once you've described the variables, enter an R chunk by selecting Code -> Insert Chunk, or Ctrl+Alt+I, give it a name to describe the dataset you are importing. After importing, export a dataframe summary using the command.*
+
+`export_summary_table(dfSummary(dataset_name))`
+
+## National Park Visitation Data
+**Citation:** National Park Service (2020). National Park Service Visitor Use Statistics. https://irma.nps.gov/STATS/Reports/National   
+**DOI:** not available  
+**Date Downloaded:** 1/16/2020  
+**Filenames:** raw_data/np_visits_xxxx.csv
+**Unit of observation:** visitation in a given park in a given month
+**Dates covered:** January 1988 - December 2018 (earlier available but not downloaded)
+
+### To obtain a copy  
+
+Interested users should visit the National Park Service Visitor Use Statistics website at https://irma.nps.gov/STATS/Reports/National and choose the **Query Builder for Public Use Statistics (1979 - Last Calendar Year)** link. On the Build Query page, make the following selections:
+
+- Select Year: 1988-2018 (must be selected individually)
+- Select Region: *Sequentially select each region*
+- Select Park: Select All
+- Select Additional Fields: Park Type, Region, State, Unit Code
+- Select Months: Select All
+- Select Park Type: National Park
+- Select Field Name: Recreation Visits
+
+After clicking View Report, the data can be downloaded by clicking on the disk icon and selecting CSV.
+
+Due to the size of the resulting queries, the website often has trouble downloading all the data at once. To overcome this, data were downloaded by region and are provided in the replication archive in the raw_data folder as files beginning with np_visit_data_xxxx.csv.
+
+### Importable versions
+
+**Filenames:** importable_data/np_vists_xxx_importable.csv
+
+The raw files from the website have several features that make reading into R directly somewhat difficult. First, the top several lines of the file include a url for accessing the data. Second, many of the numeric columns include commas separating the thousands that cause issues with importing. To circumvent these problems, importable versions of the files were created.
+
+The following changes were made to create the importable files.
+
+1. The original file was opened in Microsoft Excel.  
+2. The first three lines of the file were deleted so the column names are on line 1.  
+3. Columns H through AI (RecreationVisits through MiscellaneousOvernightStaysTotal) were highlighted and
+formatted as numbers with no decimal places and no 1000 separators.  
+4. The file was saved using the CSV(comma delimited) format in the importable_data folder.  
+
+*Note:* This procedure violates one of my principles of data analysis: avoid doing the same thing over and over again. It's usually possible to get the computer to do it for you. In this case, we could get R to read in the original files directly by specifying column types and defining a special function to read-in the data. I did it this way in the demonstration file for two reasons:
+
+1. To demonstrate how to document the process if you have to modify your raw files before importing.  
+1. Because there are only a couple files, it may be faster to make this change manually than to figure out the code needed to automate it. Whether this is true or not depends on the number of files you need to modify and the likelihood that you'll have to redo it (e.g. if you decided to add years to your analysis later). Check with me if you find yourself wondering whether you should automate something or do it manually (or see [this xkcd comic](https://imgs.xkcd.com/comics/is_it_worth_the_time_2x.png))
+
+### Variable descriptions
+
+The NPS website does not provide an easily accessible description of the variables included in the file. The following variable descriptions were inferred from the data.
+
+- **ParkName:** The name of the national park.
+- **UnitCode:** A letter code used by the NPS to identify the park  
+- **ParkType:** Only "National Parks" included
+- **Region:** Parks are divided into seven regions. Regional identifiers were not used in this analysis
+- **State:** The two-letter abbreviation of the state containing the park
+- **Year:** The four digit year
+- **Month:** Numeric code for the month
+- **RecreationVisits:** The number of recreation visits in that month (raw count)
+- Note: The remaining columns of the file include other variables that were not used in this analysis and are not documented here.
+
+### Data import code and summary
+```{r read in visit data}
+#Get list of np_vists_xxx filenames
+#Notes: using ^ at the beginning of the pattern means the string must occur at
+#at the beginnning of the filename
+visit_filenames <- dir("importable_data", pattern = "np_visits_*", full.names = T)
+
+#read in and stack regional data, keep variables of interest, and give them "nice" names
+#note: you should be careful when dropping variables that you are not dropping variables
+#that tell you something important about your data. In this case, we only wanted
+#recreation visits but the query builder gives us extra data not displayed in the table
+#when you download a file
+np_visit_stats <- lapply(visit_filenames, read_csv) %>% bind_rows() %>% 
+  select(unit_code = UnitCode,
+         park_type = ParkType,
+         region = Region,
+         year = Year,
+         month = Month,
+         recreation_visits = RecreationVisits) 
+  
+export_summary_table(dfSummary(np_visit_stats))
+```
+
+## National Park Visibility Data
+
+**Citation:**   
+**DOI:**  
+**Date Downloaded:** 1/15/2020  
+**Unit of observation:** visibility at a given monitor on a given day (not quite daily)
+**Dates covered:** March 1988 - December 2018
+
+### To obtain a copy  
+Interested users can access visibility data at the website http://views.cira.colostate.edu/fed/QueryWizard/. The following options were used to produce the data used in this study.
+
+Datasets: IMPROVE Aerosol, RHR II (New Equation)
+Sites: Select all
+Parameters: Standard Visual Range
+Dates: Select all months and years
+Aggregations: Non-aggregated
+Fields: Dataset, Site, POC, Date, Paramter, Data Value, Site Name, Latitude, Longitude, State
+Options: Text File, Delimited (,), Standard Format, Data Only, None, Missing Values -999, Date Format 2002/03/14
+
+### Variable descriptions
+
+- **Dataset:** IMPRHR2, an IMPROVE program internal code for the IMPROVE Aerosol, RHR II (New Equation)"
+- **SiteCode:** Code indicating the monitor location
+- **POC:** Internal code not used in analysis
+- **Date:** Date of observation in yyyy-mm-dd format
+- **SiteName:** Name of monitor site
+- **Latitude:** Latitude of monitor
+- **Longitude:** Longitude of monitor
+- **State:** Two leter state abbreviation
+- **svr_value:** Standard Visual Range (km). Missing values are coded as -999.   
+
+### Data import code and summary
+
+```{r read in visibility data, cache = F, results = 'asis'}
+svr_raw <- read_csv("raw_data/svr_data.txt") %>% 
+  rename(monitor_code = SiteCode,
+         site_name = SiteName) %>% 
+  #following line sets svr_value = NA when the raw data is equal to -999 (the missing identifer)
+  mutate(svr_value = case_when(`SVR:Value` != -999 ~ `SVR:Value`))
+
+export_summary_table(dfSummary(svr_raw))
+
+```
+
+## Site Matching Key
+
+**Filename:** raw_data/site_key.txt
+**Unit of observation:** Parks
+
+This file was created manually based on Table A (pp. 27-34) from Taylor, K. (2017). National Park Service Air Quality Analysis Methods. National Park Service. https://www.nps.gov/subjects/air/upload/NRR-NPS_AQAnalysisMethods_08-24-2017-3.pdf This table identifies typical monitors used to assess visisbility in each park.
+
+### Variable descriptions
+
+- **park_name:** As written in Table A in Taylor (2017)  
+- **monitor_code:** Name of IMPROVE monitor in the svr_data  
+- **unit_code:** National park code in the np_visits_stats data  
+
+```{r import site key, cache = F}
+site_key <- read_csv("raw_data/site_key.csv")
+
+export_summary_table(dfSummary(site_key))
+```
+
+# Data Processing and Combination
+*This section should include a discussion of the processing and merging steps needed to create your basic data. The code to implement these steps should be included in chunks in this section. Once the final merged data has been created, you should use the dfSummary function again to summarize the data you will be using and save it to the processed_data folder in .csv format.*
+
+For this dataset, the visibility data is availabile multiple times a week (although not quite daily). To match this with monthly visitation data, I compute several summary statistics on the visibility within a month including mean, median, minimum, maximum, and several percentiles.
+
+```{r compute summary statistics by month and park, cache = T}
+# verify that all missing values of svr_value are true missing observations
+filter(svr_raw, is.na(svr_value)) %>% 
+  select(`SVR:Value`) %>% 
+  summary()
+
+# create dataset with only non-missing observations and variables we will use
+svr_daily <- svr_raw %>% 
+  select(monitor_code, date = Date, svr_value) %>% 
+  drop_na(svr_value)
+
+svr_monthly <- svr_daily %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  group_by(monitor_code, month, year) %>% 
+  summarize(svr_mean = mean(svr_value, na.rm = TRUE),
+            svr_median = median(svr_value, na.rm = TRUE),
+            svr_p10 = quantile(svr_value, .10, na.rm = TRUE),
+            svr_p25 = quantile(svr_value, .25, na.rm = TRUE),
+            svr_p75 = quantile(svr_value, .75, na.rm = TRUE),
+            svr_p90 = quantile(svr_value, .90, na.rm = TRUE),
+            svr_min = min(svr_value, na.rm = TRUE), 
+            svr_max = max(svr_value, na.rm = TRUE)) %>% 
+  ungroup()
+```
+
+These summary stats are then merged with the visit data. In the commands below, right_join includes only svr_monthly data that matches a monitor code present in site_key and the left_join adds visitor statistics for all parks. Any park without visitor statistics will have an NA.
+
+```{r merge visibility and visit data using site key}
+merged_data <- svr_monthly %>% 
+  right_join(site_key) %>%  
+  left_join(np_visit_stats)
+
+merged_data$month_code <- as.factor(merged_data$month)
+
+#Note: the next line is important because statistical software will assume that numeric 
+#variables are cardinal and estimate a linear relationship with month if we use the 
+#original variable directly
+merged_data$monitor_code <- as.factor(merged_data$monitor_code)
+
+```
+
+# Analysis Variables
+
+The variable used in the final analysis are:
+
+- **monitor_code:** Name of IMPROVE monitor in the svr_data  
+- **month:** Number of month of observation
+- **year:** Four-digit year of observation
+- **svr_mean:** Mean of all standard visual range observations in a given month at a given park (km)
+- **svr_median:** Median of all standard visual range observations in a given month at a given park (km)
+- **svr_p10:** 10th percentile of standard visual range observations in a given month at a given park (km)
+- **svr_p25:** 25th percentile of standard visual range observations in a given month at a given park (km)
+- **svr_p75:** 75th percentile of standard visual range observations in a given month at a given park (km)
+- **svr_p90:** 90th percentile of standard visual range observations in a given month at a given park (km)
+- **svr_min:** Minimum standard visual range observation in a given month at a given park (km)
+- **svr_max:** Maximum standard visual range observations in a given month at a given park (km)
+- **park_name:** As written in Table A in Taylor (2017)
+- **unit_code:** National park code in the np_visits_stats data
+- **region:** Region containing the national park
+- **recreation_visits:** Number of recreation visits to a given park in a given month (people)
+- **month_code:** factor version of the month observation code
+
+```{r summarize and save analysis data for future use}
+export_summary_table(dfSummary(merged_data))
+
+#Note: I don't actually need the site_key file in the analysis, but included it here to
+#demonstrate how to save multiple data files
+save("merged_data", "site_key", file = "processed_data/analysis_data.RData")
+```
+
+# Discussion of Data
+
+*This section should include a discussion of any data patterns you notice based on the summaries created in the code above. You are likely to have more information here.*
+
+First, the histogram for recreation visits shows that the data is highly skewed. Most park-month combinations have very low visitor counts, but some entries are extremely high. This probably reflects variations in the popularity and location of parks. The estimation strategy uses park-month fixed effects to account for this.
+
+Second, President's Park seems to appear in the data multiple times. This is because the same park name was repeated from Table A when manually matching monitor code and unit codes. Each value of unit_code appears 370 times in the data which is consistent with the data that run from March 1988 through December 2018.
